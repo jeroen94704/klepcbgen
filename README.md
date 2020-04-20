@@ -19,9 +19,21 @@ Features available in KLE that would impact a PCB but are currently **not** supp
 
 # Manual
 
-While this script takes care of a lot of the tedious drudge-work (most notably correctly positioning all switches), the end-result is not a finished layout you can immediately send off to be manufactured. There are a few steps required to get the schematic and layout.
+While this script takes care of a lot of the tedious drudge-work (most notably correctly positioning all switches), the end-result is not a finished layout you can immediately send off to be manufactured. There are a few manual steps required to get everything in working order:
 
-<TODO>
+* Execute the script from the commandline: `python klepcbgen.py example_layout.json mykeyboard`
+* This generates the KiCad project in the subdirectory "mykeyboard"
+* Load the project in KiCad and double-click the kicad_pcb file to open it.
+* From the **Tools** menu, select **Update Footprints from Library...**
+* Make sure **Update all footprints on board** is the selected option, then click **Apply**. Once it finishes the update, click **Close**
+* From the **Tools** menu, select **Update PCB from Schematic...**
+* This will open the **Annotate** dialog for the schematic. Ensure **Keep existing annotations** is selected, then click **Annotate**
+* KiCad will automatically switch back to the **Update PCB from Schematic...** dialog once it finishes the annotation
+* Ensure the Match Method is set to **Re-associate footprints by reference** (**THIS IS NOT THE DEFAULT, SO BE SURE TO CHANGE IT**) and click **Update PCB**
+
+The schematic and pcb layout are now properly linked. You will see a lot of unconnected traces. Automatically routing these connections is beyond the scope of this script, so you will have to do this manually. Also, the microcontroller circuit and USB connector are placed outside the board outline. The best placement for these is highly board-specific, and even depends on your preference, so this has to be done manually as well.
+
+Once you finish the PCB, you can generate the set of Gerber files 
 
 # Future improvements
 
