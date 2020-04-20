@@ -1,6 +1,6 @@
 # KLE PCB Generator
 
-This script takes a json file exported from the online [Keyboard Layout Editor](http://www.keyboard-layout-editor.com/) and generates a KiCAD schematic and layout out of this. The resulting schematic is pretty much complete: it contains all key switches connected in rows and columns, a functional control circuit built around the ATmega32U4 (including external crystal, reset switch and a USB connector) and mounting holes. The layout is only partly connected, but most crucially it contains all switches in the right positions (including holes for stabilizers for keys that need it), and a board outline compatible with [swillkb's online Plate&Case Builder](http://builder.swillkb.com/), which accepts the same KLE json input and produces several CAD files with which one can build a keyboard.
+This script takes a json file exported from the online [Keyboard Layout Editor](http://www.keyboard-layout-editor.com/) and generates a KiCAD schematic and layout out of this. The resulting schematic is pretty much complete: it contains all key switches connected in rows and columns, a functional control circuit built around the ATmega32U4 (including external crystal, reset switch and a USB connector) and mounting holes. The layout is only partly connected, but most crucially it contains all switches in the right positions (including holes for stabilizers for keys that need it).
 
 # Features
 
@@ -39,6 +39,7 @@ Once you finish the PCB, you can generate the set of Gerber files
 
 I have a bunch of ideas for this generator, such as:
 
+* A board outline compatible with [swillkb's online Plate&Case Builder](http://builder.swillkb.com/). 
 * Lighting: obviously RGB is all the rage, so I would like to add options to generate a PCB which includes lighting
 * Split layout: I'm a big fan of ergonomic/split layouts (I'm currently typing this on a Kinesis Freestyle Pro)
 * Wireless: Cables are a nuisance. I'd love to make my own wireless keyboard
