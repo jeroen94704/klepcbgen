@@ -3,7 +3,7 @@
   (general
     (thickness 1.6)
     (drawings 0)
-    (tracks {{numtracks}})
+    (tracks 0)
     (zones 0)
     (modules {{nummodules}})
     (nets {{numnets}})
@@ -94,8 +94,6 @@
 
 {{modules}}
 
-{{vias}}
-
-{{traces}}
+{{controlcircuit}}
 
 )

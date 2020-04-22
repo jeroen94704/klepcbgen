@@ -1,5 +1,5 @@
   (net 0 "")
-{{rownets}}{{colnets}}{{diodenets}}
+{{netdeclarations}}
 
   (net_class Default "This is the default net class."
     (clearance 0.2)

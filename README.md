@@ -42,6 +42,8 @@ I have a bunch of ideas for this generator, such as:
 * A board outline compatible with [swillkb's online Plate&Case Builder](http://builder.swillkb.com/). 
 * Lighting: obviously RGB is all the rage, so I would like to add options to generate a PCB which includes lighting
 * Split layout: I'm a big fan of ergonomic/split layouts (I'm currently typing this on a Kinesis Freestyle Pro)
-* Wireless: Cables are a nuisance. I'd love to make my own wireless keyboard
+* Wireless: Cables are a nuisance.
+
+As you can imagine, I'd love to make my own split, wireless, RGB-lit keyboard.
 
 

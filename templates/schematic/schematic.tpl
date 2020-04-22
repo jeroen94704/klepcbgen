@@ -14,4 +14,5 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 {{components}}
+{{controlcircuit}}
 $EndSCHEMATC
