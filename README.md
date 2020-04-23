@@ -9,6 +9,7 @@ At this point klepcbgen supports only the bare minimum of features:
 * Keys of different widths and/or heights
 * Stabilizers for keys 2 units or more wide
 * Cherry MX switch mount
+* Does not require custom KiCad libraries
 
 Features available in KLE that would impact a PCB but are currently **not** supported are:
 
