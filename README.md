@@ -44,7 +44,8 @@ I have a bunch of ideas for this generator, such as:
 * Lighting: obviously RGB is all the rage, so I would like to add options to generate a PCB which includes lighting
 * Split layout: I'm a big fan of ergonomic/split layouts (I'm currently typing this on a Kinesis Freestyle Pro)
 * Wireless: Cables are a nuisance.
+* Multiple options for the control circuit: The ATmega32U4 is not the only option, and frankly doesn't have a lot of spare pins, e.g. for lighting
 
-As you can imagine, I'd love to make my own split, wireless, RGB-lit keyboard.
+As you can guess, I'd love to make my own split, wireless, RGB-lit keyboard.
 
 
