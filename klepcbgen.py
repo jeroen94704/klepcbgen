@@ -4,8 +4,9 @@ import datetime
 import sys
 import os
 import math
-from jinja2 import Environment, FileSystemLoader, StrictUndefined
+
 from pathlib import Path
+from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
 # Program version
 PROGRAM_VERSION = "0.1"
@@ -19,7 +20,7 @@ class KeyBlockCollection:
         # Check if the block exists, and add a number of blocks if needed
         blocksToAdd = (blockIndex + 1) - len(self.blocks)
         if blocksToAdd > 0:
-            for index in range(blocksToAdd):
+            for _ in range(blocksToAdd):
                 self.blocks.append([])
 
         self.blocks[blockIndex].append(keyIndex)
@@ -124,9 +125,8 @@ class Nets:
 class KLEPCBGenerator:
     keyboard = Keyboard()
 
-    """ Set-up directories """
-
     def __init__(self):
+        """ Set-up directories """
         self.project_dir = Path(__file__).resolve().parent
         self.jinja_env = Environment(
             loader=FileSystemLoader([self.project_dir / "templates"]),
@@ -435,11 +435,11 @@ class KLEPCBGenerator:
         self.nets.add_net('"Net-(U1-Pad20)"')
 
         rowtpl = self.jinja_env.get_template("layout/rownetname.tpl")
-        for rownum, row in enumerate(self.keyboard.rows.blocks):
+        for rownum, _ in enumerate(self.keyboard.rows.blocks):
             self.nets.add_net(rowtpl.render(rownum=rownum))
 
         coltpl = self.jinja_env.get_template("layout/colnetname.tpl")
-        for colnum, col in enumerate(self.keyboard.columns.blocks):
+        for colnum, _ in enumerate(self.keyboard.columns.blocks):
             self.nets.add_net(coltpl.render(colnum=colnum))
 
         diodetpl = self.jinja_env.get_template("layout/diodenetname.tpl")

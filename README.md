@@ -18,11 +18,23 @@ Features available in KLE that would impact a PCB but are currently **not** supp
 * Alps switch mount
 * Plate mounted switches (although I think the footprints for PCB mounted switches are compatible with plate mounted switches)
 
-# Manual
+# Installation
+
+klepcbgen requires python 3 and the jinja2 template module. Assuming you have a reasonably recent python install which includes pip by default, you can simply install jinja2 using the following command:
+
+`pip install jinja2`
+
+(Note: On Windows, make sure to execute this command in a shell with admin rights)
+
+Then either [download and unzip the code](https://github.com/jeroen94704/klepcbgen/archive/master.zip)) or clone the repository:
+
+`git clone https://github.com/jeroen94704/klepcbgen` 
+
+# Usage
 
 While this script takes care of a lot of the tedious drudge-work (most notably correctly positioning all switches), the end-result is not a finished layout you can immediately send off to be manufactured. There are a few manual steps required to get everything in working order:
 
-* Execute the script from the commandline: `python klepcbgen.py example_layout.json mykeyboard`
+* Execute the script from the commandline, e.g. using the provided example layout as input: `python klepcbgen.py example_layout.json mykeyboard`
 * This generates the KiCad project in the subdirectory "mykeyboard"
 * Load the project in KiCad and double-click the kicad_pcb file to open it.
 * From the **Tools** menu, select **Update Footprints from Library...**
@@ -34,7 +46,7 @@ While this script takes care of a lot of the tedious drudge-work (most notably c
 
 The schematic and pcb layout are now properly linked. You will see a lot of unconnected traces. Automatically routing these connections is beyond the scope of this script, so you will have to do this manually. Also, the microcontroller circuit and USB connector are placed outside the board outline. The best placement for these is highly board-specific, and even depends on your preference, so this has to be done manually as well.
 
-Once you finish the PCB, you can generate the set of Gerber files 
+Once you finish the PCB, you can generate the set of Gerber files, as explained for example [in this guide](https://github.com/ruiqimao/keyboard-pcb-guide).
 
 # Future improvements
 
