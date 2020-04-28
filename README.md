@@ -26,7 +26,7 @@ klepcbgen requires python 3 and the jinja2 template module. Assuming you have a 
 
 (Note: On Windows, make sure to execute this command in a shell with admin rights)
 
-Then either [download and unzip the code](https://github.com/jeroen94704/klepcbgen/archive/master.zip)) or clone the repository:
+Then either [download and unzip the code](https://github.com/jeroen94704/klepcbgen/archive/master.zip) or clone the repository:
 
 `git clone https://github.com/jeroen94704/klepcbgen` 
 
