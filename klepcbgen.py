@@ -265,12 +265,12 @@ class KLEPCBGenerator:
         # For each key in the board, determine the X,Y of the center of the key. This determines
         # the row/column a key is in
         for index, key in enumerate(self.keyboard.keys):
-            centerx = key.x
+            centerx = key.x_unit
             col = math.floor(centerx)
             self.keyboard.add_key_to_col(col, index)
             self.keyboard.keys[index].col = col
 
-            centery = key.y
+            centery = key.y_unit
             row = math.floor(centery)
             self.keyboard.add_key_to_row(row, index)
             self.keyboard.keys[index].row = row
@@ -284,8 +284,8 @@ class KLEPCBGenerator:
 
         # Place keyswitches and diodes
         for key in self.keyboard.keys:
-            placement_x = int(600 + key.x * 800)
-            placement_y = int(800 + key.y * 500)
+            placement_x = int(600 + key.x_unit * 800)
+            placement_y = int(800 + key.y_unit * 500)
 
             components_section = components_section + switch_tpl.render(
                 num=component_count,
@@ -349,8 +349,8 @@ class KLEPCBGenerator:
 
         for key in self.keyboard.keys:
             # Place switch
-            ref_x = -100 + key.x_coord * key_pitch
-            ref_y = 17.78 + key.y_coord * key_pitch
+            ref_x = -100 + key.x_unit * key_pitch
+            ref_y = 17.78 + key.y_unit * key_pitch
             components_section = (
                 components_section
                 + switch.render(
