@@ -13,7 +13,6 @@ from jinja2 import Environment, FileSystemLoader, StrictUndefined
 # Program version
 PROGRAM_VERSION = "0.1"
 
-
 class KeyBlockCollection:
     """Maintains a collection of blocks of keyboard keys, such as columns or rows"""
     def __init__(self):
@@ -467,11 +466,13 @@ class KLEPCBGenerator:
         self.nets.add_net('"Net-(U1-Pad20)"')
 
         row_tpl = self.jinja_env.get_template("layout/rownetname.tpl")
-        for row_num, _ in enumerate(self.keyboard.rows.blocks):
+        # Always declare the max number of row nets, since the control circuit template refers to them
+        for row_num in range(6): 
             self.nets.add_net(row_tpl.render(rownum=row_num))
 
         col_tpl = self.jinja_env.get_template("layout/colnetname.tpl")
-        for col_num, _ in enumerate(self.keyboard.columns.blocks):
+        # Always declare the max number of column nets, since the control circuit template refers to them
+        for col_num in range(16): 
             self.nets.add_net(col_tpl.render(colnum=col_num))
 
         diode_tpl = self.jinja_env.get_template("layout/diodenetname.tpl")
