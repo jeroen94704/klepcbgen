@@ -4,19 +4,19 @@ This script takes a json file exported from the online [Keyboard Layout Editor](
 
 # Features
 
-At this point klepcbgen supports only the bare minimum of features:
+klepcbgen currently has the following features:
 
 * Keys of different widths and/or heights
 * Stabilizers for keys 2 units or more wide
 * Cherry MX switch mount
 * Does not require custom KiCad libraries
 
-Features available in KLE that would impact a PCB but are currently **not** supported are:
+Features available in KLE that would impact the PCB layout but are currently **not** supported are:
 
 * Secondary width/height (So no ISO/big-ass ENTER keys for now, sorry!)
 * Rotated keys
-* Alps switch mount
-* Plate mounted switches (although I think the footprints for PCB mounted switches are compatible with plate mounted switches)
+* Vertical keys (e.g. numpad ENTER and "+")
+* Alps switches
 
 # Installation
 
@@ -32,10 +32,10 @@ Then either [download and unzip the code](https://github.com/jeroen94704/klepcbg
 
 # Usage
 
-While this script takes care of a lot of the tedious drudge-work (most notably correctly positioning all switches), the end-result is not a finished layout you can immediately send off to be manufactured. There are a few manual steps required to get everything in working order:
+While this script takes care of a lot of the tedious and error-prone drudge-work (most notably correctly positioning all switches), the end-result is not a finished layout you can immediately send off to be manufactured. There are a few manual steps required to get everything in working order:
 
 * Execute the script from the commandline, e.g. using the provided example layout as input: `python klepcbgen.py example_layout.json mykeyboard`
-* This generates the KiCad project in the subdirectory "mykeyboard"
+* This generates a KiCad project in the subdirectory "mykeyboard"
 * Load the project in KiCad and double-click the kicad_pcb file to open it.
 * From the **Tools** menu, select **Update Footprints from Library...**
 * Make sure **Update all footprints on board** is the selected option, then click **Apply**. Once it finishes the update, click **Close**
