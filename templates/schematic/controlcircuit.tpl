@@ -279,10 +279,6 @@ F 3 "" H 5400 9100 50  0001 C CNN
 	1    5400 9100
 	-1   0    0    1   
 $EndComp
-Wire Wire Line
-	4600 9100 3850 9100
-Wire Wire Line
-	3850 10400 3850 9100
 $Comp
 L power:VCC #PWR01
 U 1 1 5EA29B06
@@ -373,7 +369,6 @@ F 3 "~" H 3850 10800 50  0001 C CNN
 	1    3850 10600
 	0    -1   -1   0   
 $EndComp
-Connection ~ 3850 10400
 $Comp
 L Device:C C1
 U 1 1 5EA42E8A
@@ -498,3 +493,49 @@ Wire Wire Line
 Wire Wire Line
 	4700 10050 4850 10050
 Connection ~ 4850 10050
+Text Label 3850 10400 1    50   ~ 0
+Reset
+Text Label 4600 9100 3    50   ~ 0
+Reset
+Text Label 7600 10050 2    50   ~ 0
+Row_4
+Text Label 8100 10050 0    50   ~ 0
+Row_3
+Text Label 8100 9950 0    50   ~ 0
+Row_2
+$Comp
+L power:GND #PWR?
+U 1 1 6015E4D5
+P 7600 10150
+F 0 "#PWR?" H 7600 9900 50  0001 C CNN
+F 1 "GND" V 7605 10022 50  0000 R CNN
+F 2 "" H 7600 10150 50  0001 C CNN
+F 3 "" H 7600 10150 50  0001 C CNN
+	1    7600 10150
+	0    1    1    0   
+$EndComp
+$Comp
+L power:VCC #PWR?
+U 1 1 6015C011
+P 7600 9950
+F 0 "#PWR?" H 7600 9800 50  0001 C CNN
+F 1 "VCC" V 7618 10077 50  0000 L CNN
+F 2 "" H 7600 9950 50  0001 C CNN
+F 3 "" H 7600 9950 50  0001 C CNN
+	1    7600 9950
+	0    -1   -1   0   
+$EndComp
+Text Label 8100 10150 0    50   ~ 0
+Reset
+$Comp
+L Connector_Generic:Conn_02x03_Odd_Even J2
+U 1 1 60155D68
+P 7800 10050
+F 0 "J2" H 7850 10367 50  0000 C CNN
+F 1 "Conn_02x03_Odd_Even" H 7850 10276 50  0000 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_2x03_P2.54mm_Vertical" H 7800 10050 50  0001 C CNN
+F 3 "~" H 7800 10050 50  0001 C CNN
+	1    7800 10050
+	1    0    0    -1  
+$EndComp
+

@@ -461,6 +461,7 @@ class KLEPCBGenerator:
         self.nets.add_net('"Net-(R3-Pad1)"')
         self.nets.add_net('"Net-(R4-Pad2)"')
         self.nets.add_net('"Net-(U1-Pad42)"')
+        self.nets.add_net('/Reset')
 
         row_tpl = self.jinja_env.get_template("layout/rownetname.tpl")
         # Always declare the max number of row nets, since the control circuit template refers to them
@@ -524,8 +525,6 @@ class KLEPCBGenerator:
 
         self.define_nets()
         nets = self.create_layout_nets()
-
-        print(self.nets.nets)
 
         components, numcomponents = self.place_layout_components()
 
