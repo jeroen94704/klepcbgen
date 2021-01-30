@@ -4,16 +4,17 @@ This script takes a json file exported from the online [Keyboard Layout Editor](
 
 # Features
 
-klepcbgen currently has the following features:
+Current klepcbgen features are:
 
 * Keys of different widths and/or heights
-* Stabilizers for keys 2 units or more wide
+* Adds stabilizers for keys 2 units or more wide
 * Cherry MX switch mount
-* Does not require custom KiCad libraries
+* Keyboard layouts with at most 18 columns and 7 rows
+* Uses only standard KiCad libraries
 
-Features available in KLE that would impact the PCB layout but are currently **not** supported are:
+Currently **not** supported are:
 
-* Secondary width/height (So no ISO/big-ass ENTER keys for now, sorry!)
+* Keys with secondary width/height (So no ISO/big-ass ENTER keys for now, sorry!)
 * Rotated keys
 * Vertical keys (e.g. numpad ENTER and "+")
 * Alps switches
@@ -50,7 +51,13 @@ Once you finish the PCB, you can generate the set of Gerber files, as explained 
 
 # Future improvements
 
-I have a bunch of ideas for this generator, such as:
+* Smarter way to group keys in rows and columns, as the current approach does not even allow for a full 104-key layout
+* Support foorprints with stabilizers for vertical keys (numpad enter and 0)
+* Add the option to use Alps footprints (Supported in KiCad as Matias switches)
+* Support ISO-ENTER
+* Support rotated keys
+
+I also have a bunch of ideas for this generator, such as:
 
 * A board outline compatible with [swillkb's online Plate&Case Builder](http://builder.swillkb.com/). 
 * Lighting: obviously RGB is all the rage, so I would like to add options to generate a PCB which includes lighting
