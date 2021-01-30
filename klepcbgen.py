@@ -461,18 +461,15 @@ class KLEPCBGenerator:
         self.nets.add_net('"Net-(R3-Pad1)"')
         self.nets.add_net('"Net-(R4-Pad2)"')
         self.nets.add_net('"Net-(U1-Pad42)"')
-        self.nets.add_net('"Net-(U1-Pad21)"')
-        self.nets.add_net('"Net-(U1-Pad1)"')
-        self.nets.add_net('"Net-(U1-Pad20)"')
 
         row_tpl = self.jinja_env.get_template("layout/rownetname.tpl")
         # Always declare the max number of row nets, since the control circuit template refers to them
-        for row_num in range(6): 
+        for row_num in range(7): 
             self.nets.add_net(row_tpl.render(rownum=row_num))
 
         col_tpl = self.jinja_env.get_template("layout/colnetname.tpl")
         # Always declare the max number of column nets, since the control circuit template refers to them
-        for col_num in range(16): 
+        for col_num in range(18): 
             self.nets.add_net(col_tpl.render(colnum=col_num))
 
         diode_tpl = self.jinja_env.get_template("layout/diodenetname.tpl")

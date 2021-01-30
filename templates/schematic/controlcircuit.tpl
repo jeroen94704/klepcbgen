@@ -210,7 +210,7 @@ Row_4
 Text Label 4600 7900 1    50   ~ 0
 Row_5
 Text Label 6800 7900 1    50   ~ 0
-Col_18
+Row_6
 $Comp
 L power:GND #PWR0106
 U 1 1 5E98552C
