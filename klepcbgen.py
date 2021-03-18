@@ -1,5 +1,5 @@
 import sys
-from  klepcbgen import *
+from  klepcbgenmod import *
 import argparse
 
 def parse_command_line_arguments():
