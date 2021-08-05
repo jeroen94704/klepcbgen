@@ -176,8 +176,11 @@ class KLEPCBGenerator:
 
         print("Reading input file '" + args.infile + "' ...")
 
-        with open(args.infile, "r", encoding="latin-1") as read_file:
-            kle_json = json.load(read_file)
+        if args.infile == "-":
+            kle_json = json.load(sys.stdin)
+        else:
+            with open(args.infile, "r", encoding="latin-1") as read_file:
+                kle_json = json.load(read_file)
 
         # First create a list of switches, each with its own X,Y coordinate
         current_x = 0.0
