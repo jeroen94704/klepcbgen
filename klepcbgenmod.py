@@ -78,6 +78,7 @@ class Key:
     """All required information about a single keyboard key"""
     x_unit = 0
     y_unit = 0
+    y_top = 0
     width = 0
     height = 0
     row = 0
@@ -205,6 +206,7 @@ class KLEPCBGenerator:
                         new_key.num = key_num
                         new_key.x_unit = current_x + key_width / 2
                         new_key.y_unit = current_y + key_height / 2
+                        new_key.y_top = current_y
                         new_key.legend = item
                         new_key.width = key_width
                         new_key.height = key_height
@@ -237,7 +239,7 @@ class KLEPCBGenerator:
         keysInRow = [0] * MAX_ROWS
         for index, key in enumerate(self.keyboard.keys):
             centery = key.y_unit
-            row = math.floor(centery)
+            row = math.floor(key.y_top)
 
             if row > MAX_ROWS-1:
                 exit("ERROR: Key placement produced too many rows. klepcbgen currently cannot generate a valid KiCad project for this keyboard layout.\nExiting ...")
