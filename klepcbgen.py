@@ -22,6 +22,11 @@ a keyboard designed using the Keyboard Layout Editor \
         help='The base name of the output files (e.g. "id80" will result in "id80.sch" and \
                 "id80.pcb"',
     )
+    parser.add_argument(
+        "--normal-diodes", action="store_true",
+        help='Use pass-through diodes instead of surface-mounted ones.',
+        default=False
+    )
     args = parser.parse_args()
 
     if not args.infile:
