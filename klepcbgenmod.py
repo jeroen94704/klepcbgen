@@ -88,6 +88,7 @@ class Key:
     rownetnum = 0
     num = 0
     legend = "<N/A>"
+    fake = False
 
 
 def unit_width_to_available_footprint(unit_width):
@@ -189,6 +190,7 @@ class KLEPCBGenerator:
                 key_width = 1
                 key_height = 1
                 # Extract all keys in a row
+                last_x = None
                 for item in row:
                     if isinstance(item, dict):
                         for key, value in item.items():
@@ -201,6 +203,21 @@ class KLEPCBGenerator:
                             elif key == "h":
                                 key_height = value
                     elif isinstance(item, str):
+                        # append as many fake keys as it is possible between the previous and the current one
+                        while last_x is not None and ((current_x + key_width/2) - last_x) >= 2:
+                            new_key1 = Key()
+                            new_key1.fake = True
+                            new_key1.num = key_num
+                            new_key1.x_unit = current_x - 1 / 2
+                            new_key1.y_unit = current_y + 1 / 2
+                            new_key1.y_top = current_y
+                            new_key1.legend = f"fake{key_num}"
+                            new_key1.width = 1
+                            new_key1.height = 1
+                            self.keyboard.keys.append(new_key1)
+                            key_num += 1
+                            last_x += 1
+                        last_x = current_x + (key_width / 2)
                         new_key = Key()
                         new_key.num = key_num
                         new_key.x_unit = current_x + key_width / 2
@@ -263,6 +280,8 @@ class KLEPCBGenerator:
 
         # Place keyswitches and diodes
         for key in self.keyboard.keys:
+            if key.fake:
+                continue
             placement_x = int(600 + key.x_unit * 800)
             placement_y = int(800 + key.y_unit * 500)
 
@@ -327,6 +346,8 @@ class KLEPCBGenerator:
         diode_trace_offsets = [[-6.38, 2.54], [-6.38, 7.77]]
 
         for key in self.keyboard.keys:
+            if key.fake:
+                continue
             # Place switch
             ref_x = -100 + key.x_unit * key_pitch
             ref_y = 17.78 + key.y_unit * key_pitch
@@ -455,6 +476,8 @@ class KLEPCBGenerator:
 
         diode_tpl = self.jinja_env.get_template("layout/diodenetname.tpl")
         for diode_num in range(len(self.keyboard.keys)):
+            if self.keyboard.keys[diode_num].fake:
+                continue
             self.nets.add_net(diode_tpl.render(diodenum=diode_num))
 
     def create_layout_nets(self):
@@ -475,6 +498,8 @@ class KLEPCBGenerator:
         for index, row in enumerate(self.keyboard.rows.blocks):
             rownetname = rowtpl.render(rownum=index)
             for keyindex in row:
+                if self.keyboard.keys[keyindex].fake:
+                    continue
                 self.keyboard.keys[keyindex].rownetnum = self.nets.get_net_num(
                     rownetname
                 )
@@ -489,6 +514,8 @@ class KLEPCBGenerator:
 
         diodetpl = self.jinja_env.get_template("layout/diodenetname.tpl")
         for diodenum in range(len(self.keyboard.keys)):
+            if self.keyboard.keys[diodenum].fake:
+                continue
             diodenetname = diodetpl.render(diodenum=diodenum)
             self.keyboard.keys[diodenum].diodenetnum = self.nets.get_net_num(
                 diodenetname
