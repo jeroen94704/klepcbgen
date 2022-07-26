@@ -29,7 +29,7 @@ klepcbgen requires python 3 and the jinja2 template module. Assuming you have a 
 
 Then either [download and unzip the code](https://github.com/jeroen94704/klepcbgen/archive/master.zip) or clone the repository:
 
-`git clone https://github.com/jeroen94704/klepcbgen` 
+`git clone https://github.com/jeroen94704/klepcbgen`
 
 # Usage
 
@@ -37,7 +37,7 @@ While this script takes care of a lot of the tedious and error-prone drudge-work
 
 * Execute the script from the commandline, e.g. using the provided example layout as input: `python klepcbgen.py example_layout.json mykeyboard`
 * This generates a KiCad project in the subdirectory "mykeyboard"
-* Load the project in KiCad and double-click the kicad_pcb file to open it.
+* Load the project in KiCad and double-click the kicad_pcb file to open it
 * From the **Tools** menu, select **Update Footprints from Library...**
 * Make sure **Update all footprints on board** is the selected option, then click **Apply**. Once it finishes the update, click **Close**
 * From the **Tools** menu, select **Update PCB from Schematic...**
@@ -52,17 +52,17 @@ Once you finish the PCB, you can generate the set of Gerber files, as explained 
 # Future improvements
 
 * Smarter way to group keys in rows and columns, as the current approach does not even allow for a full 104-key layout
-* Support foorprints with stabilizers for vertical keys (numpad enter and 0)
+* Support footprints with stabilizers for vertical keys (numpad enter and 0)
 * Add the option to use Alps footprints (Supported in KiCad as Matias switches)
 * Support ISO-ENTER
 * Support rotated keys
 
 I also have a bunch of ideas for this generator, such as:
 
-* A board outline compatible with [swillkb's online Plate&Case Builder](http://builder.swillkb.com/). 
+* A board outline compatible with [swillkb's online Plate&Case Builder](http://builder.swillkb.com/)
 * Lighting: obviously RGB is all the rage, so I would like to add options to generate a PCB which includes lighting
 * Split layout: I'm a big fan of ergonomic/split layouts (I'm currently typing this on a Kinesis Freestyle Pro)
-* Wireless: Cables are a nuisance.
+* Wireless: Cables are a nuisance
 * Multiple options for the control circuit: The ATmega32U4 is not the only option, and frankly doesn't have a lot of spare pins, e.g. for lighting
 
 As you can guess, I'd love to make my own split, wireless, RGB-lit keyboard.
