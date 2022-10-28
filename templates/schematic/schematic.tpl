@@ -13,6 +13,5 @@ Comment2 "{{comment}}"
 Comment3 ""
 Comment4 ""
 $EndDescr
-{{components}}
-{{controlcircuit}}
+{{components}}{{controlcircuit}}
 $EndSCHEMATC
