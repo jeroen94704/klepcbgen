@@ -164,6 +164,7 @@ class KLEPCBGenerator:
         if not os.path.exists(arguments.outname):
             os.mkdir(arguments.outname)
 
+        self._normal_diodes = arguments.normal_diodes
         self.read_kle_json(arguments)
         self.generate_rows_and_columns()
         self.generate_schematic(arguments)
@@ -250,7 +251,7 @@ class KLEPCBGenerator:
 
             col = keysInRow[row]
             keysInRow[row] += 1
-            
+
             if col > MAX_COLS-1:
                 exit("ERROR: Key placement produced too many columns. klepcbgen currently cannot generate a valid KiCad project for this keyboard layout.\nExiting ...")
 
@@ -311,7 +312,10 @@ class KLEPCBGenerator:
     def place_layout_components(self):
         """ Place footprint components, traces and vias """
         switch = self.jinja_env.get_template("layout/keyswitch.tpl")
-        diode = self.jinja_env.get_template("layout/diode.tpl")
+        if self._normal_diodes:
+            diode = self.jinja_env.get_template("layout/diode_passthrough.tpl")
+        else:
+            diode = self.jinja_env.get_template("layout/diode.tpl")
         component_count = 0
         components_section = ""
 
@@ -324,10 +328,16 @@ class KLEPCBGenerator:
 
         # Place keyswitches, diodes, vias and traces
         key_pitch = 19.05
-        diode_offset = [-6.35, 8.89]
+        if self._normal_diodes:
+            diode_offset = [-12, 9.33]
+            diode_trace_offsets = [[-6.38, 2.54], [-11.5, -1]]
+            diode_trace_offsets2 = [[-6.38, 2.54], [-12, 9.33]]
+            row_via_offsets = [[-9.68, 9.33], [4.6, 9.33]]
+        else:
+            diode_offset = [-6.35, 8.89]
+            diode_trace_offsets = [[-6.38, 2.54], [-6.38, 7.77]]
+            row_via_offsets = [[-9.68, 9.83], [4.6, 9.83]]
         col_via_offsets = [[0, -2.03], [0, 12.24]]
-        row_via_offsets = [[-9.68, 9.83], [4.6, 9.83]]
-        diode_trace_offsets = [[-6.38, 2.54], [-6.38, 7.77]]
 
         for key in self.keyboard.keys:
             # Place switch
@@ -422,6 +432,19 @@ class KLEPCBGenerator:
                 )
                 + "\n"
             )
+            if self._normal_diodes:
+                components_section = (
+                components_section
+                + tracetpl.render(
+                    x1=ref_x + row_via_offsets[0][0],
+                    y1=ref_y + row_via_offsets[0][1],
+                    x2=ref_x + diode_trace_offsets2[1][0],
+                    y2=ref_y + diode_trace_offsets2[1][1],
+                    layer="B.Cu",
+                    netnum=key.diodenetnum,
+                )
+                + "\n"
+            )
 
             # Place stabilizer mount holes, if necessary
 
@@ -448,12 +471,12 @@ class KLEPCBGenerator:
 
         row_tpl = self.jinja_env.get_template("layout/rownetname.tpl")
         # Always declare the max number of row nets, since the control circuit template refers to them
-        for row_num in range(MAX_ROWS): 
+        for row_num in range(MAX_ROWS):
             self.nets.add_net(row_tpl.render(rownum=row_num))
 
         col_tpl = self.jinja_env.get_template("layout/colnetname.tpl")
         # Always declare the max number of column nets, since the control circuit template refers to them
-        for col_num in range(MAX_COLS): 
+        for col_num in range(MAX_COLS):
             self.nets.add_net(col_tpl.render(colnum=col_num))
 
         diode_tpl = self.jinja_env.get_template("layout/diodenetname.tpl")
@@ -478,24 +501,18 @@ class KLEPCBGenerator:
         for index, row in enumerate(self.keyboard.rows.blocks):
             rownetname = rowtpl.render(rownum=index)
             for keyindex in row:
-                self.keyboard.keys[keyindex].rownetnum = self.nets.get_net_num(
-                    rownetname
-                )
+                self.keyboard.keys[keyindex].rownetnum = self.nets.get_net_num(rownetname)
 
         coltpl = self.jinja_env.get_template("layout/colnetname.tpl")
         for index, col in enumerate(self.keyboard.columns.blocks):
             colnetname = coltpl.render(colnum=index)
             for keyindex in col:
-                self.keyboard.keys[keyindex].colnetnum = self.nets.get_net_num(
-                    colnetname
-                )
+                self.keyboard.keys[keyindex].colnetnum = self.nets.get_net_num(colnetname)
 
         diodetpl = self.jinja_env.get_template("layout/diodenetname.tpl")
         for diodenum in range(len(self.keyboard.keys)):
             diodenetname = diodetpl.render(diodenum=diodenum)
-            self.keyboard.keys[diodenum].diodenetnum = self.nets.get_net_num(
-                diodenetname
-            )
+            self.keyboard.keys[diodenum].diodenetnum = self.nets.get_net_num(diodenetname)
 
         nets = self.jinja_env.get_template("layout/nets.tpl")
 
