@@ -164,6 +164,8 @@ class KLEPCBGenerator:
         if not os.path.exists(arguments.outname):
             os.mkdir(arguments.outname)
 
+        self._no_grid_background_tracks = arguments.no_grid_background_tracks
+        self._no_grid_foreground_tracks = arguments.no_grid_foreground_tracks
         self.read_kle_json(arguments)
         self.generate_rows_and_columns()
         self.generate_schematic(arguments)
@@ -365,50 +367,54 @@ class KLEPCBGenerator:
             )
 
             # Place vias
-            for offset in col_via_offsets:
-                via_x = ref_x + offset[0]
-                via_y = ref_y + offset[1]
-                components_section = (
-                    components_section
-                    + viatpl.render(x=via_x, y=via_y, netnum=key.colnetnum)
-                    + "\n"
-                )
+            if not self._no_grid_foreground_tracks:
+                for offset in col_via_offsets:
+                    via_x = ref_x + offset[0]
+                    via_y = ref_y + offset[1]
+                    components_section = (
+                        components_section
+                        + viatpl.render(x=via_x, y=via_y, netnum=key.colnetnum)
+                        + "\n"
+                    )
 
-            for offset in row_via_offsets:
-                via_x = ref_x + offset[0]
-                via_y = ref_y + offset[1]
-                components_section = (
-                    components_section
-                    + viatpl.render(x=via_x, y=via_y, netnum=key.rownetnum)
-                    + "\n"
-                )
+            if not self._no_grid_background_tracks:
+                for offset in row_via_offsets:
+                    via_x = ref_x + offset[0]
+                    via_y = ref_y + offset[1]
+                    components_section = (
+                        components_section
+                        + viatpl.render(x=via_x, y=via_y, netnum=key.rownetnum)
+                        + "\n"
+                    )
 
             # Place traces
-            components_section = (
-                components_section
-                + tracetpl.render(
-                    x1=ref_x + row_via_offsets[0][0],
-                    y1=ref_y + row_via_offsets[0][1],
-                    x2=ref_x + row_via_offsets[1][0],
-                    y2=ref_y + row_via_offsets[1][1],
-                    layer="B.Cu",
-                    netnum=key.rownetnum,
+            if not self._no_grid_background_tracks:
+                components_section = (
+                    components_section
+                    + tracetpl.render(
+                        x1=ref_x + row_via_offsets[0][0],
+                        y1=ref_y + row_via_offsets[0][1],
+                        x2=ref_x + row_via_offsets[1][0],
+                        y2=ref_y + row_via_offsets[1][1],
+                        layer="B.Cu",
+                        netnum=key.rownetnum,
+                    )
+                    + "\n"
                 )
-                + "\n"
-            )
 
-            components_section = (
-                components_section
-                + tracetpl.render(
-                    x1=ref_x + col_via_offsets[0][0],
-                    y1=ref_y + col_via_offsets[0][1],
-                    x2=ref_x + col_via_offsets[1][0],
-                    y2=ref_y + col_via_offsets[1][1],
-                    layer="F.Cu",
-                    netnum=key.colnetnum,
+            if not self._no_grid_foreground_tracks:
+                components_section = (
+                    components_section
+                    + tracetpl.render(
+                        x1=ref_x + col_via_offsets[0][0],
+                        y1=ref_y + col_via_offsets[0][1],
+                        x2=ref_x + col_via_offsets[1][0],
+                        y2=ref_y + col_via_offsets[1][1],
+                        layer="F.Cu",
+                        netnum=key.colnetnum,
+                    )
+                    + "\n"
                 )
-                + "\n"
-            )
 
             components_section = (
                 components_section
