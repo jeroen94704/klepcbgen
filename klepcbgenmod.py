@@ -324,10 +324,10 @@ class KLEPCBGenerator:
 
         # Place keyswitches, diodes, vias and traces
         key_pitch = 19.05
-        diode_offset = [-6.35, 8.89]
-        col_via_offsets = [[0, -2.03], [0, 12.24]]
+        diode_offset = [-5.8, 8.89]
+        col_via_offsets = [[0.6, -2.03], [0.6, 12.24]]
         row_via_offsets = [[-9.68, 9.83], [4.6, 9.83]]
-        diode_trace_offsets = [[-6.38, 2.54], [-6.38, 7.77]]
+        diode_trace_offsets = [[-5.8, 2.54], [-5.8, 7.77]]
 
         for key in self.keyboard.keys:
             # Place switch
