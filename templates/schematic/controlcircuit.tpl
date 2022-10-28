@@ -490,9 +490,9 @@ Reset
 Text Label 4600 9100 3    50   ~ 0
 Reset
 Text Label 7600 10050 2    50   ~ 0
-Row_4
-Text Label 8100 10050 0    50   ~ 0
 Row_3
+Text Label 8100 10050 0    50   ~ 0
+Row_4
 Text Label 8100 9950 0    50   ~ 0
 Row_2
 $Comp
