@@ -158,28 +158,28 @@ class KLEPCBGenerator:
         )
         self.nets = Nets()
 
-    def generate_kicadproject(self, arguments):
+    def generate_kicadproject(self, infile, outname, do_routing, colgrouping):
         """Generate the kicad project. Main entry point"""
 
-        if not os.path.exists(arguments.outname):
-            os.mkdir(arguments.outname)
+        if not os.path.exists(outname):
+            os.mkdir(outname)
 
-        self.read_kle_json(arguments)
-        self.generate_rows_and_columns()
-        self.generate_schematic(arguments)
-        self.generate_layout(arguments)
-        self.generate_project(arguments)
+        self.read_kle_json(infile)
+        self.generate_rows_and_columns(colgrouping)
+        self.generate_schematic(outname)
+        self.generate_layout(outname, do_routing)
+        self.generate_project(outname)
 
-    def read_kle_json(self, args):
+    def read_kle_json(self, infile):
         """ Read the provided KLE input file and create a list of all the keyswitches that should
             be on the board """
 
-        print("Reading input file '" + args.infile + "' ...")
+        print("Reading input file '" + infile + "' ...")
 
-        if args.infile == "-":
+        if infile == "-":
             kle_json = json.load(sys.stdin)
         else:
-            with open(args.infile, "r", encoding="latin-1") as read_file:
+            with open(infile, "r", encoding="utf-8") as read_file:
                 kle_json = json.load(read_file)
 
         # First create a list of switches, each with its own X,Y coordinate
@@ -206,13 +206,24 @@ class KLEPCBGenerator:
                     elif isinstance(item, str):
                         new_key = Key()
                         new_key.num = key_num
-                        new_key.x_unit = current_x + key_width / 2
-                        new_key.y_unit = current_y + key_height / 2
-                        new_key.legend = item
+                        new_key.x_unit = current_x + key_width / 2.0
+                        new_key.y_unit = current_y + key_height / 2.0
+                        if item == "":
+                            new_key.legend = "Blank"
+                        elif item == " ":
+                            new_key.legend = "Space"
+                        else:
+                            new_key.legend = item
+
+                        ## Perform some escaping on the legend text to satisfy KiCad
+                        new_key.legend = new_key.legend.replace('\n', ",")
+                        new_key.legend = new_key.legend.replace('~', '~~')
+                        new_key.legend = new_key.legend.replace('\\', '\\\\')
+                        new_key.legend = new_key.legend.replace('"', '\\\"')
+                        
                         new_key.width = key_width
                         new_key.height = key_height
                         self.keyboard.keys.append(new_key)
-
                         current_x += key_width
                         key_num += 1
                         key_width = 1
@@ -229,34 +240,46 @@ class KLEPCBGenerator:
                 if "author" in row:
                     self.keyboard.author = row["author"]
 
-    def generate_rows_and_columns(self):
+    def generate_rows_and_columns(self, colgrouping):
         """ Group keys in rows and columns based on the position of the center of the switch in a
             grid """
 
         print("Grouping keys in rows and columns ... ")
 
-        # For each key in the board, determine the X,Y of the center of the key. This determines
-        # the row/column a key is in
-        keysInRow = [0] * MAX_ROWS
+        # For each key in the board, determine the Y of the center of the key. This determines
+        # the row a key is in.
+        keys_in_row = [0] * MAX_ROWS
         for index, key in enumerate(self.keyboard.keys):
-            centery = key.y_unit
+            centery = key.y_unit-0.5
             row = math.floor(centery)
-
             if row > MAX_ROWS-1:
                 exit("ERROR: Key placement produced too many rows. klepcbgen currently cannot generate a valid KiCad project for this keyboard layout.\nExiting ...")
 
             self.keyboard.add_key_to_row(row, index)
             self.keyboard.keys[index].row = row
 
-            col = keysInRow[row]
-            keysInRow[row] += 1
-            
-            if col > MAX_COLS-1:
+            keys_in_row[row] += 1
+
+            if keys_in_row[row] > MAX_COLS-1:
                 exit("ERROR: Key placement produced too many columns. klepcbgen currently cannot generate a valid KiCad project for this keyboard layout.\nExiting ...")
 
-            self.keyboard.add_key_to_col(col, index)
-            self.keyboard.keys[index].col = col
+        # Sort the keys in each row by X-coordinate, then assign a column to each key
+        for row in self.keyboard.rows.blocks:
+            row.sort(key=lambda key_index: self.keyboard.keys[key_index].x_unit)
 
+            col = 0
+            for key_index in row:
+                key = self.keyboard.keys[key_index]
+
+                # Determine the column based on x-coordinate instead of sequentially
+                if colgrouping == 'pos':
+                    centerx = key.x_unit-0.5
+                    col = math.floor(centerx)
+
+                self.keyboard.add_key_to_col(col, key_index)
+                key.col = col
+                col += 1
+                
     def place_schematic_components(self):
         """Place schematic components determined by the layout(keyswitches and diodes)"""
         switch_tpl = self.jinja_env.get_template("schematic/keyswitch.tpl")
@@ -271,6 +294,7 @@ class KLEPCBGenerator:
 
             components_section = components_section + switch_tpl.render(
                 num=component_count,
+                legend=key.legend,
                 x=placement_x,
                 y=placement_y,
                 rowNum=key.row,
@@ -282,7 +306,7 @@ class KLEPCBGenerator:
 
         return components_section
 
-    def generate_schematic(self, args):
+    def generate_schematic(self, outname):
         """ Generate schematic """
 
         print("Generating schematic ...")
@@ -295,7 +319,7 @@ class KLEPCBGenerator:
             "Generated by " + os.path.basename(sys.argv[0]) + " v" + PROGRAM_VERSION
         )
         with open(
-                args.outname + "/" + os.path.basename(os.path.normpath(args.outname)) + ".sch", "w+", newline="\n"
+                outname + "/" + os.path.basename(os.path.normpath(outname)) + ".sch", "w+", newline="\n", encoding="utf-8"
         ) as out_file:
             out_file.write(
                 schematic.render(
@@ -308,7 +332,7 @@ class KLEPCBGenerator:
                 )
             )
 
-    def place_layout_components(self):
+    def place_layout_components(self, do_routing):
         """ Place footprint components, traces and vias """
         switch = self.jinja_env.get_template("layout/keyswitch.tpl")
         diode = self.jinja_env.get_template("layout/diode.tpl")
@@ -319,24 +343,38 @@ class KLEPCBGenerator:
         diodetpl = self.jinja_env.get_template("layout/diodenetname.tpl")
         rowtpl = self.jinja_env.get_template("layout/rownetname.tpl")
         coltpl = self.jinja_env.get_template("layout/colnetname.tpl")
-        viatpl = self.jinja_env.get_template("layout/via.tpl")
         tracetpl = self.jinja_env.get_template("layout/trace.tpl")
 
         # Place keyswitches, diodes, vias and traces
         key_pitch = 19.05
-        diode_offset = [-5.8, 8.89]
-        col_via_offsets = [[0.6, -2.03], [0.6, 12.24]]
-        row_via_offsets = [[-9.68, 9.83], [4.6, 9.83]]
-        diode_trace_offsets = [[-5.8, 2.54], [-5.8, 7.77]]
+        key_origin_x = -100
+        key_origin_y = 17.78
+
+        # diode_offset = [-6.35, 8.89]
+        # col_via_offsets = [[0, -2.03], [0, 12.24]]
+        # row_via_offsets = [[-9.68, 9.83], [4.6, 9.83]]
+        # diode_trace_offsets = [[-6.38, 2.54], [-6.38, 7.77]]
+
+        # Several offsets that are relative to the 0,0 poin inside the switch layout template
+        diode_offset = [-5.8, 8.89]                         # Position of the diode 
+        diode_trace_offsets = [[-5.8, 2.54], [-5.8, 7.77]]  # Start/end-points for the trace connecting the diode to the switch
+        row_trace_offset = [-5.8, 9.83]     # Position of the bottom pad of the diode
+        switch_contact_x_offset = 0.55      # Small offset for the vertical traces to avoid them getting too close to pads
+        switch_corner_y = 10                # Y-offset of the point where the downward trace can angle towards the next switch
+        switch_top = -4.50                  # Y-offset for the top of the Dwgs rectangle in the switch template
+        switch_bottom = 14.5                # Y-offset for the bottom of the Dwgs rectangle in the switch template
+        switch_left = -12                   # X-offset for the left of the Dwgs rectangle in the switch template
+        switch_right = 7                    # X-offset for the right of the Dwgs rectangle in the switch template
 
         for key in self.keyboard.keys:
             # Place switch
-            ref_x = -100 + key.x_unit * key_pitch
-            ref_y = 17.78 + key.y_unit * key_pitch
+            ref_x = key_origin_x + key.x_unit * key_pitch
+            ref_y = key_origin_y + key.y_unit * key_pitch
             components_section = (
                 components_section
                 + switch.render(
                     num=component_count,
+                    legend=key.legend,
                     x=ref_x,
                     y=ref_y,
                     diodenetnum=key.diodenetnum,
@@ -364,52 +402,7 @@ class KLEPCBGenerator:
                 + "\n"
             )
 
-            # Place vias
-            for offset in col_via_offsets:
-                via_x = ref_x + offset[0]
-                via_y = ref_y + offset[1]
-                components_section = (
-                    components_section
-                    + viatpl.render(x=via_x, y=via_y, netnum=key.colnetnum)
-                    + "\n"
-                )
-
-            for offset in row_via_offsets:
-                via_x = ref_x + offset[0]
-                via_y = ref_y + offset[1]
-                components_section = (
-                    components_section
-                    + viatpl.render(x=via_x, y=via_y, netnum=key.rownetnum)
-                    + "\n"
-                )
-
-            # Place traces
-            components_section = (
-                components_section
-                + tracetpl.render(
-                    x1=ref_x + row_via_offsets[0][0],
-                    y1=ref_y + row_via_offsets[0][1],
-                    x2=ref_x + row_via_offsets[1][0],
-                    y2=ref_y + row_via_offsets[1][1],
-                    layer="B.Cu",
-                    netnum=key.rownetnum,
-                )
-                + "\n"
-            )
-
-            components_section = (
-                components_section
-                + tracetpl.render(
-                    x1=ref_x + col_via_offsets[0][0],
-                    y1=ref_y + col_via_offsets[0][1],
-                    x2=ref_x + col_via_offsets[1][0],
-                    y2=ref_y + col_via_offsets[1][1],
-                    layer="F.Cu",
-                    netnum=key.colnetnum,
-                )
-                + "\n"
-            )
-
+            # Connect diode to switch
             components_section = (
                 components_section
                 + tracetpl.render(
@@ -423,9 +416,103 @@ class KLEPCBGenerator:
                 + "\n"
             )
 
-            # Place stabilizer mount holes, if necessary
-
             component_count += 1
+
+        if do_routing:
+            # Add traces between all diodes in a row
+            for row in self.keyboard.rows.blocks:
+                prev_index = -1
+                for key_index in row:
+                    if(prev_index != -1):                    
+                        left_key = self.keyboard.keys[prev_index]
+                        right_key = self.keyboard.keys[key_index]
+
+                        left_diode_x = key_origin_x + left_key.x_unit * key_pitch + row_trace_offset[0]
+                        left_diode_y = key_origin_y + left_key.y_unit * key_pitch + row_trace_offset[1]
+
+                        right_diode_x = key_origin_x + right_key.x_unit * key_pitch + row_trace_offset[0]
+                        right_diode_y = key_origin_y + right_key.y_unit * key_pitch + row_trace_offset[1]
+
+                        components_section = (
+                            components_section
+                            + tracetpl.render(
+                                x1=left_diode_x,
+                                y1=left_diode_y,
+                                x2=right_diode_x,
+                                y2=right_diode_y,
+                                layer="B.Cu",
+                                netnum=left_key.rownetnum,
+                            )
+                            + "\n"
+                        )
+                    prev_index = key_index
+
+            # Add (partial) traces between switches columns
+            for column in self.keyboard.columns.blocks:
+                prev_index = -1
+                for key_index in column:
+                    if(prev_index != -1):                    
+                        top_key = self.keyboard.keys[prev_index]
+                        bot_key = self.keyboard.keys[key_index]
+
+                        top_hole_x = key_origin_x + top_key.x_unit * key_pitch
+                        top_hole_y = key_origin_y + top_key.y_unit * key_pitch
+
+                        bot_hole_x = key_origin_x + bot_key.x_unit * key_pitch
+                        bot_hole_y = key_origin_y + bot_key.y_unit * key_pitch
+
+                        components_section = (
+                            components_section
+                            + tracetpl.render(
+                                x1=top_hole_x + switch_contact_x_offset,
+                                y1=top_hole_y,
+                                x2=top_hole_x + switch_contact_x_offset,
+                                y2=top_hole_y + switch_corner_y,
+                                layer="F.Cu",
+                                netnum=top_key.colnetnum,
+                            )
+                            + "\n"
+                        )
+
+                        to_x = top_hole_x + switch_contact_x_offset
+                        if to_x > bot_hole_x + switch_right:
+                            to_x = bot_hole_x + switch_right
+                        elif to_x < bot_hole_x + switch_left:
+                            to_x = bot_hole_x + switch_left
+
+                        components_section = (
+                            components_section
+                            + tracetpl.render(
+                                x1=bot_hole_x + switch_contact_x_offset,
+                                y1=bot_hole_y,
+                                x2=to_x,
+                                y2=bot_hole_y + switch_top,
+                                layer="F.Cu",
+                                netnum=top_key.colnetnum,
+                            )
+                            + "\n"
+                        )
+
+                        if to_x > top_hole_x + switch_right:
+                            to_x = top_hole_x + switch_right
+                        elif to_x < top_hole_x + switch_left:
+                            to_x = top_hole_x + switch_left
+
+                        components_section = (
+                            components_section
+                            + tracetpl.render(
+                                x1=top_hole_x + switch_contact_x_offset,
+                                y1=top_hole_y + switch_corner_y,
+                                x2=to_x,
+                                y2=top_hole_y + switch_bottom,
+                                layer="F.Cu",
+                                netnum=top_key.colnetnum,
+                            )
+                            + "\n"
+                        )
+
+                    prev_index = key_index
+
 
         return components_section, component_count
 
@@ -448,7 +535,7 @@ class KLEPCBGenerator:
 
         row_tpl = self.jinja_env.get_template("layout/rownetname.tpl")
         # Always declare the max number of row nets, since the control circuit template refers to them
-        for row_num in range(MAX_ROWS): 
+        for row_num in range(MAX_ROWS):
             self.nets.add_net(row_tpl.render(rownum=row_num))
 
         col_tpl = self.jinja_env.get_template("layout/colnetname.tpl")
@@ -501,7 +588,7 @@ class KLEPCBGenerator:
 
         return nets.render(netdeclarations=declarenets, addnets=addnets)
 
-    def generate_layout(self, args):
+    def generate_layout(self, outname, do_routing):
         """ Generate layout """
 
         print("Generating PCB layout ...")
@@ -509,12 +596,12 @@ class KLEPCBGenerator:
         self.define_nets()
         nets = self.create_layout_nets()
 
-        components, numcomponents = self.place_layout_components()
+        components, numcomponents = self.place_layout_components(do_routing)
 
         layout = self.jinja_env.get_template("layout/layout.tpl")
         controlcircuit = self.jinja_env.get_template("layout/controlcircuit.tpl")
-        layout_output_file_path = args.outname + "/" + os.path.basename(os.path.normpath(args.outname)) + ".kicad_pcb"
-        with open(layout_output_file_path, "w+", newline="\n") as out_file:
+        layout_output_file_path = outname + "/" + os.path.basename(os.path.normpath(outname)) + ".kicad_pcb"
+        with open(layout_output_file_path, "w+", newline="\n", encoding="utf-8") as out_file:
             out_file.write(
                 layout.render(
                     modules=components,
@@ -525,11 +612,11 @@ class KLEPCBGenerator:
                 )
             )
 
-    def generate_project(self, args):
+    def generate_project(self, outname):
         """Generate the project file"""
         prj = self.jinja_env.get_template("kicadproject.tpl")
         with open(
-                args.outname + "/" + os.path.basename(os.path.normpath(args.outname)) + ".pro", "w+", newline="\n"
+                outname + "/" + os.path.basename(os.path.normpath(outname)) + ".pro", "w+", newline="\n", encoding="utf-8"
         ) as out_file:
             out_file.write(prj.render())
 
