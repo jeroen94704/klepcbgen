@@ -14,7 +14,7 @@ Current klepcbgen features are:
 
 Currently **not** supported are:
 
-* Keys with secondary width/height (So no ISO/big-ass ENTER keys for now, sorry!)
+* Keys with secondary width/height (So no ISO ENTER keys for now, sorry!)
 * Rotated keys
 * Vertical keys (e.g. numpad ENTER and "+")
 * Alps switches
@@ -33,7 +33,7 @@ Then either [download and unzip the code](https://github.com/jeroen94704/klepcbg
 
 ## Usage
 
-While this script takes care of a lot of the tedious and error-prone drudge-work (most notably correctly positioning all switches), the end-result is not a finished layout you can immediately send off to be manufactured. There are a few manual steps required to get everything in working order:
+While this script takes care of a lot of the tedious and error-prone drudge-work (most notably correctly positioning all switches), the end-result is not a finished design you can immediately send off to be manufactured. There are a few manual steps required to get everything in working order:
 
 1. Execute the script from the commandline, e.g. using the provided example layout as input: `python klepcbgen.py example_layout.json mykeyboard`
 2. This generates a KiCad project in the subdirectory "mykeyboard"
@@ -45,7 +45,12 @@ While this script takes care of a lot of the tedious and error-prone drudge-work
 8. KiCad will automatically switch back to the **Update PCB from Schematic...** dialog once it finishes the annotation
 9. Ensure the Match Method is set to **Re-associate footprints by reference** (**THIS IS NOT THE DEFAULT, SO BE SURE TO CHANGE IT**) and click **Update PCB**
 
-The schematic and pcb layout are now properly linked. You will see a lot of unconnected traces. Automatically routing these connections is beyond the scope of this script, so you will have to do this manually. Also, the microcontroller circuit and USB connector are placed outside the board outline. The best placement for these is highly board-specific, and even depends on your preference, so this has to be done manually as well.
+The schematic and pcb layout are now properly linked, although you will see a lot of unconnected traces. Automatically routing these connections is beyond the scope of this script, so the next step is finishing the board layout manually:
+
+1. Check the board for problems. The script tries to partly route the key matrix. For this it applies some simple heuristics which give usable results in most cases. However, there's a good chance this simple approach leads to issues you'll need to fix, such as shorts or traces interfering with pads or through-holes. Use the Design Rule Checker (Inspect -> Design Rules Checker -> Run DRC). Disregard the unconnected items for now, but to check the "Problems/Markers" report.
+2. Place the microcontroller circuit and USB connector. The best spot for these is highly board-specific and depends on personal preference.
+3. Finish the key matrix layout. The script adds traces up to the boundary of each switch footprint. This **can** connect a switch to the next one in a column, but it often doesn't, so you'll have to make this connection yourself.
+4. Connect the key-matrix and USB connector to the control circuit. This is the most time-consuming step as you will quickly run out of space in the area around the microcontroller.
 
 Once you finish the PCB, you can generate the set of Gerber files, as explained for example [in this guide](https://github.com/ruiqimao/keyboard-pcb-guide).
 
@@ -67,18 +72,16 @@ Also note that the Match Method mentioned in step 9 above is called "Re-link foo
 
 ## Future improvements
 
-* Smarter way to group keys in rows and columns, as the current approach does not even allow for a full 104-key layout
+* Smarter way to group keys in rows and columns, as the current approach does not allow for a full 104-key layout
 * Support foorprints with stabilizers for vertical keys (numpad enter and 0)
 * Add the option to use Alps footprints (Supported in KiCad as Matias switches)
 * Support ISO-ENTER
 * Support rotated keys
 
-I also have a bunch of ideas for this generator, such as:
+And further down the line:
 
 * A board outline compatible with [swillkb's online Plate&Case Builder](http://builder.swillkb.com/).
 * Lighting: obviously RGB is all the rage, so I would like to add options to generate a PCB which includes lighting
 * Split layout: I'm a big fan of ergonomic/split layouts (I'm currently typing this on a Kinesis Freestyle Pro)
 * Wireless: Cables are a nuisance.
 * Multiple options for the control circuit: The ATmega32U4 is not the only option, and frankly doesn't have a lot of spare pins, e.g. for lighting
-
-As you can guess, I'd love to make my own split, wireless, RGB-lit keyboard.
