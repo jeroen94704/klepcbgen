@@ -3,7 +3,7 @@ L Switch:SW_Push K{{num}}
 U 1 1 KEYSWITCH_{{num}}
 P {{x+200}} {{y}}
 F 0 "K{{num}}" H {{x+200}} {{y + 233}} 60  0000 C CNN
-F 1 "KEYSW" H {{x+200}} {{y-100}} 60  0001 C CNN
+F 1 "{{"%s"|format(legend)}}" H {{x+200}} {{y-100}} 60  0001 C CNN
 F 2 "Button_Switch_Keyboard:SW_Cherry_MX_{{keywidth}}u_PCB" H {{x+200}} {{y}} 60  0001 C CNN
 F 3 "" H {{x+200}} {{y}} 60  0000 C CNN
 	1    {{x+200}} {{y}}

@@ -6,7 +6,7 @@
     (fp_text reference K{{num}} (at -2.54 -2.794) (layer F.SilkS)
       (effects (font (size 1 1) (thickness 0.15)))
     )
-    (fp_text value KEYSW (at -2.54 12.954) (layer F.Fab)
+    (fp_text value "{{"%s"|format(legend)}}" (at -2.54 12.954) (layer F.SilkS)
       (effects (font (size 1 1) (thickness 0.15)))
     )
     (fp_line (start -9.525 12.065) (end -9.525 -1.905) (layer F.SilkS) (width 0.12))
