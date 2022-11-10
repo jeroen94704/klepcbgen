@@ -21,15 +21,15 @@ Currently **not** supported are:
 
 ## Installation
 
-klepcbgen requires python 3 and the jinja2 template module. Assuming you have a reasonably recent python install which includes pip by default, you can simply install jinja2 using the following command:
-
-`pip install jinja2`
-
-(Note: On Windows, make sure to execute this command in a shell with admin rights)
-
-Then either [download and unzip the code](https://github.com/jeroen94704/klepcbgen/archive/master.zip) or clone the repository:
+You can install klepcbgen by [downloading and unzipping the code](https://github.com/jeroen94704/klepcbgen/archive/master.zip) or by cloning the repository:
 
 `git clone https://github.com/jeroen94704/klepcbgen`
+
+Then install the required dependencies, use the following command:
+
+`pip install -r requirements.txt`
+
+(Note: On Windows, make sure to execute this command in a shell with admin rights)
 
 ## Usage
 
