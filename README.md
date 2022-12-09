@@ -1,16 +1,19 @@
 # KLE PCB Generator
 
-This script takes a json file exported from the online [Keyboard Layout Editor](http://www.keyboard-layout-editor.com/) and generates a KiCAD schematic and layout out of this. The resulting schematic is pretty much complete: it contains all key switches connected in rows and columns, a functional control circuit built around the ATmega32U4 (including external crystal, reset switch, programming header and a USB connector) and mounting holes. The layout is only partly connected, but most crucially it contains all switches in the right positions (including holes for stabilizers for keys that need it).
+This script makes it easier to create your own keyboard with fully custom key layout. It reads a file exported from the online [Keyboard Layout Editor](http://www.keyboard-layout-editor.com/) and generates a [KiCAD](https://www.kicad.org/) project from this, complete with schematic and layout. After manually finalizing the design you can generate the files a production service (such as [OSH Park](https://oshpark.com/) or [Eurocircuits](https://www.eurocircuits.com/)) needs to manufacture your PCB.
+
+The generated schematic is pretty much complete and contains all key switches connected in rows and columns, a functional control circuit built around the ATmega32U4 (including external crystal, reset switch, programming header and a USB connector) and mounting holes. The layout is only partly routed, but contains all switches (including stabilizer mounting holes for keys that need it) in the correct position.
 
 ## Features
 
 Current klepcbgen features are:
 
+* Generate a project compatible with KiCad 5 and 6 (But check [this](./wiki/KiCad-6) first)
+* Use only standard KiCad libraries
 * Keys of different widths and/or heights
-* Adds stabilizers for keys 2 units or more wide
+* Add stabilizers to keys 2 units or more wide
 * Cherry MX switch mount
-* Keyboard layouts with at most 18 columns and 7 rows
-* Uses only standard KiCad libraries
+* Limitation: layouts with at most 18 columns and 7 rows
 
 Currently **not** supported are:
 
@@ -21,11 +24,11 @@ Currently **not** supported are:
 
 ## Installation
 
-You can install klepcbgen by [downloading and unzipping the code](https://github.com/jeroen94704/klepcbgen/archive/master.zip) or by cloning the repository:
+Start by [downloading and unzipping the code](https://github.com/jeroen94704/klepcbgen/archive/master.zip) or by cloning the repository:
 
 `git clone https://github.com/jeroen94704/klepcbgen`
 
-Then install the required dependencies, use the following command:
+Then install the required dependencies, using the following command:
 
 `pip install -r requirements.txt`
 
@@ -35,7 +38,7 @@ Then install the required dependencies, use the following command:
 
 While this script takes care of a lot of the tedious and error-prone drudge-work (most notably correctly positioning all switches), the end-result is not a finished design you can immediately send off to be manufactured. There are a few manual steps required to get everything in working order:
 
-1. Execute the script from the commandline, e.g. using the provided example layout as input: `python klepcbgen.py example_layout.json mykeyboard`
+1. Execute the script from the commandline, e.g. using the provided example layout as input: `python klepcbgen.py -o mykeyboard example_layout.json`
 2. This generates a KiCad project in the subdirectory "mykeyboard"
 3. Load the project in KiCad and double-click the kicad_pcb file to open it.
 4. From the **Tools** menu, select **Update Footprints from Library...**
@@ -43,7 +46,8 @@ While this script takes care of a lot of the tedious and error-prone drudge-work
 6. From the **Tools** menu, select **Update PCB from Schematic...**
 7. This will open the **Annotate** dialog for the schematic. Ensure **Keep existing annotations** is selected, then click **Annotate**
 8. KiCad will automatically switch back to the **Update PCB from Schematic...** dialog once it finishes the annotation
-9. Ensure the Match Method is set to **Re-associate footprints by reference** (**THIS IS NOT THE DEFAULT, SO BE SURE TO CHANGE IT**) and click **Update PCB**
+9. Ensure the Match Method is set to **Re-associate footprints by reference** (for Kicad 5) or **Re-link footprints to schematic symbols based on their reference designators** (for Kicad 6). In both cases **THIS IS NOT THE DEFAULT**, so be sure to change it or it will mess up the switch placement. 
+10. Click **Update PCB**
 
 The schematic and pcb layout are now properly linked, although you will see a lot of unconnected traces. Automatically routing these connections is beyond the scope of this script, so the next step is finishing the board layout manually:
 
@@ -85,3 +89,7 @@ And further down the line:
 * Split layout: I'm a big fan of ergonomic/split layouts (I'm currently typing this on a Kinesis Freestyle Pro)
 * Wireless: Cables are a nuisance.
 * Multiple options for the control circuit: The ATmega32U4 is not the only option, and frankly doesn't have a lot of spare pins, e.g. for lighting
+
+## License
+
+ klepcbgen © 2020 by Jeroen Bouwens is licensed under CC BY-NC-SA 4.0. To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/4.0/
