@@ -61,6 +61,10 @@ More advanced options:
 * Wireless: Becaue cables are a nuisance.
 * Alternative control circuits: The ATmega32U4 is not the only option, and frankly doesn't have a lot of spare pins, e.g. for lighting
 
+## Donate
+
+If you find this project useful a small donation is much appreciated (but by no means required or expected): https://ko-fi.com/jeroen94704
+
 ## License
 
  klepcbgen © 2020 by Jeroen Bouwens is licensed under CC BY-NC-SA 4.0. To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/4.0/
