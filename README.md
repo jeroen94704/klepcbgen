@@ -8,7 +8,7 @@ The generated schematic is pretty much complete and contains all key switches co
 
 Current klepcbgen features are:
 
-* Generate a project compatible with KiCad 5 and 6 (But check [this](./wiki/KiCad-6) first)
+* Generate a project compatible with KiCad 5 and 6 (But check [this](KiCad-6) first)
 * Use only standard KiCad libraries
 * Keys of different widths and/or heights
 * Add stabilizers to keys 2 units or more wide
@@ -40,7 +40,7 @@ Please read [this wiki page](./wiki/Usage) for usage instructions.
 
 ## Kicad 6
 
-Additional instructions regarding Kicad 6 can be found [here](./wiki/KiCad-6).
+Additional instructions regarding Kicad 6 can be found [here](KiCad-6).
 
 ## Future improvements
 
