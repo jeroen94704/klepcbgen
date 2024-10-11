@@ -260,7 +260,7 @@ class KLEPCBGenerator:
 
             keys_in_row[row] += 1
 
-            if keys_in_row[row] > MAX_COLS-1:
+            if keys_in_row[row] > MAX_COLS:
                 exit("ERROR: Key placement produced too many columns. klepcbgen currently cannot generate a valid KiCad project for this keyboard layout.\nExiting ...")
 
         # Sort the keys in each row by X-coordinate, then assign a column to each key
